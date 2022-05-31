@@ -5,7 +5,19 @@
 """
 
 import sys
-sys.path.append('../marcos_client')
+import os
+#******************************************************************************
+# Add path to the working directory
+path = os.path.realpath(__file__)
+ii = 0
+for char in path:
+    if (char=='\\' or char=='/') and path[ii+1:ii+14]=='PhysioMRI_GUI':
+        # sys.path.append(path[0:ii])
+        print("Path: ",path[0:ii+1])
+        sys.path.append(path[0:ii+1]+'PhysioMRI_GUI')
+        sys.path.append(path[0:ii+1]+'marcos_client')
+    ii += 1
+#******************************************************************************
 import experiment as ex
 import numpy as np
 import matplotlib.pyplot as plt
