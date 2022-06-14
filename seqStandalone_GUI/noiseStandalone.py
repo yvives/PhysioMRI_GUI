@@ -15,7 +15,8 @@ from scipy.io import savemat
 
 def noiseStandalone(
     nReadout =2500,
-    BW =50):
+    BW =50, 
+    nScans = 1):
 
     init_gpa= False
     plotSeq = 0
@@ -47,7 +48,7 @@ def noiseStandalone(
     # SAVE DATA
     def saveData(rawData):
         dt = datetime.now()
-        dt_string = dt.strftime("%Y.%m.%d.%H.%M.%S")
+        dt_string = dt.strftime("%Y.%m.%d.%0H.%M.%S")
         dt2 = date.today()
         dt2_string = dt2.strftime("%Y.%m.%d")
         if not os.path.exists('experiments/acquisitions/%s' % (dt2_string)):
@@ -113,11 +114,21 @@ def noiseStandalone(
                         'rx_gate': (rxTime, rxAmp),
                         })
     if plotSeq == 0:
-        print('Running...')
-        rxd, msgs = expt.run()
+        dataFull=[]
+        for i in range(nScans):
+            print(i)
+            rxd, msgs = expt.run()
+            rxd['rx0'] = rxd['rx0']*13.788
+            data = rxd['rx0'][0:nReadout*oversamplingFactor]
+            dataFull=np.concatenate((dataFull, data), axis = 0)
+        
         expt.__del__()
-        print('End')
-        data = sig.decimate(rxd['rx0']*13.788, oversamplingFactor, ftype='fir', zero_phase=True)
+        dataFull = np.reshape(dataFull, (-1,nReadout*oversamplingFactor))
+        dataFull = np.reshape(dataFull, -1)
+        dataFull = sig.decimate(dataFull, oversamplingFactor, ftype='fir', zero_phase=True)
+        dataProv = np.reshape(dataFull, (nScans, nReadout))
+        dataProv = np.average(dataProv, axis=0)
+        data = dataProv
         rawData['data'] = data
         name = saveData(rawData)
         plotData(data,tAdqReal, nReadout)

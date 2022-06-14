@@ -17,13 +17,13 @@ from scipy.io import savemat
 
 def rabiflopStandalone(
     init_gpa= False,                 
-    larmorFreq=3.07862, 
+    larmorFreq=3.038, 
     rfExAmp=0.3, 
     rfReAmp=None, 
     rfExPhase = 0,
     rfExTimeIni=10, 
     rfExTimeEnd = 120, 
-    nExTime =30, 
+    nExTime =10, 
     nReadout =800,
     tAdq = 4*1e3,
     tEcho = 20*1e3,
